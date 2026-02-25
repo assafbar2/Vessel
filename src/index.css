@@ -1,0 +1,452 @@
+@import "tailwindcss";
+@import "@fontsource-variable/source-serif-4";
+
+/* ===== CSS Custom Properties ===== */
+:root {
+  --vessel-weight: 400;
+  --vessel-bg: #1a1a1a;
+  --vessel-fg: #e8e4df;
+  --vessel-font: "Source Serif 4 Variable", serif;
+}
+
+/* ===== Base Reset ===== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--vessel-bg);
+  color: var(--vessel-fg);
+}
+
+body {
+  font-family: var(--vessel-font);
+  font-weight: var(--vessel-weight);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Atmosphere Layer (Framer Motion animates background on this) ===== */
+.vessel-atmosphere {
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ===== Breathing Canvas Animation ===== */
+@keyframes vessel-breathe {
+  0%,
+  100% {
+    padding: 18vh 22vw;
+  }
+  50% {
+    padding: 21vh 25vw;
+  }
+}
+
+.vessel-canvas {
+  animation: vessel-breathe 5.5s ease-in-out infinite;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+/* ===== TipTap Editor Styling ===== */
+.tiptap {
+  outline: none;
+  border: none;
+  width: 100%;
+  min-height: 60vh;
+  font-family: var(--vessel-font);
+  font-weight: var(--vessel-weight);
+  color: var(--vessel-fg);
+  caret-color: var(--vessel-fg);
+  line-height: 1.7;
+  font-size: 1.125rem;
+  transition: color 13s ease-in-out, caret-color 13s ease-in-out;
+}
+
+.tiptap:focus {
+  outline: none;
+}
+
+.tiptap p {
+  margin-bottom: 0.75em;
+}
+
+/* No placeholder text — intentionally blank */
+.tiptap p.is-editor-empty:first-child::before {
+  content: "";
+}
+
+/* ===== Transient Mode — Block Fade ===== */
+.tiptap [data-fade-state="active"] {
+  opacity: 1;
+  transition: opacity 2s ease-out;
+}
+
+.tiptap [data-fade-state="fading"] {
+  opacity: 0;
+  transition: opacity 2s ease-out;
+}
+
+/* ===== Mode Indicator ===== */
+.mode-indicator {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  font-family: var(--vessel-font);
+  font-size: 1.25rem;
+  color: var(--vessel-fg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  user-select: none;
+  z-index: 10;
+}
+
+.vessel-atmosphere:hover .mode-indicator {
+  opacity: 0.15;
+}
+
+/* ===== Transient Notice ===== */
+.transient-notice {
+  position: fixed;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--vessel-font);
+  color: var(--vessel-fg);
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  animation: notice-fade 3s ease-in-out forwards;
+}
+
+.transient-notice-heading {
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.transient-notice-subtitle {
+  font-size: 0.8rem;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+@keyframes notice-fade {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ===== Shortcut Hint ===== */
+.shortcut-hint {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  font-family: var(--vessel-font);
+  font-size: 0.7rem;
+  color: var(--vessel-fg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  user-select: none;
+  z-index: 10;
+  letter-spacing: 0.05em;
+}
+
+.shortcut-hint span {
+  opacity: 0.8;
+}
+
+.shortcut-hint-sep {
+  margin: 0 0.4em;
+  opacity: 0.4 !important;
+}
+
+.vessel-atmosphere:hover .shortcut-hint {
+  opacity: 0.4;
+}
+
+/* ===== Ash Canvas Overlay ===== */
+.ash-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* ===== Vault ===== */
+.vault-container {
+  min-height: 100vh;
+  width: 100%;
+  background: #1a1a1a;
+  padding: 3rem;
+  overflow-y: auto;
+}
+
+.vault-empty {
+  font-family: var(--vessel-font);
+  font-size: 0.9rem;
+  color: var(--vessel-fg);
+  opacity: 0.3;
+  text-align: center;
+  padding-top: 40vh;
+}
+
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 4px;
+}
+
+.vault-block {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vault-block:hover {
+  transform: scale(1.04);
+}
+
+.vault-block-meta {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+  font-family: var(--vessel-font);
+  font-size: 0.65rem;
+  pointer-events: none;
+  line-height: 1.5;
+}
+
+.vault-block:hover .vault-block-meta {
+  opacity: 1;
+}
+
+.vault-block-delete {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.vault-block:hover .vault-block-delete {
+  opacity: 0.5;
+}
+
+.vault-block-delete:hover {
+  opacity: 1 !important;
+}
+
+/* ===== Vault Gate (passphrase) ===== */
+.vault-gate {
+  min-height: 100vh;
+  width: 100%;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vault-gate-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  width: 280px;
+}
+
+.vault-gate-label {
+  font-family: var(--vessel-font);
+  font-size: 0.85rem;
+  color: var(--vessel-fg);
+  opacity: 0.5;
+  text-align: center;
+}
+
+.vault-gate-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(232, 228, 223, 0.2);
+  font-family: var(--vessel-font);
+  font-size: 1.1rem;
+  color: var(--vessel-fg);
+  text-align: center;
+  padding: 0.5rem 0;
+  outline: none;
+  letter-spacing: 0.2em;
+}
+
+.vault-gate-input:focus {
+  border-bottom-color: rgba(232, 228, 223, 0.4);
+}
+
+.vault-gate-error {
+  font-family: var(--vessel-font);
+  font-size: 0.75rem;
+  color: #e17055;
+  opacity: 0.7;
+}
+
+/* ===== Vault Session (read-only) ===== */
+.vault-session {
+  min-height: 100vh;
+  width: 100%;
+  padding: 18vh 22vw;
+  overflow-y: auto;
+}
+
+.vault-session .tiptap {
+  cursor: default;
+}
+
+.vault-back-hint {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-family: var(--vessel-font);
+  font-size: 0.7rem;
+  color: var(--vessel-fg);
+  opacity: 0.2;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ===== Help Overlay ===== */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: help-fade-in 0.3s ease;
+}
+
+@keyframes help-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.help-content {
+  max-width: 460px;
+  width: 90%;
+  font-family: var(--vessel-font);
+  color: #e8e4df;
+}
+
+.help-title {
+  font-size: 1.3rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.help-subtitle {
+  font-size: 0.8rem;
+  opacity: 0.4;
+  font-style: italic;
+  margin-bottom: 2rem;
+}
+
+.help-description {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  opacity: 0.6;
+  margin-bottom: 2rem;
+}
+
+.help-section {
+  margin-bottom: 1.6rem;
+}
+
+.help-section-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.35;
+  margin-bottom: 0.6rem;
+}
+
+.help-section p {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  opacity: 0.6;
+  margin-bottom: 0.3rem;
+}
+
+.help-section p strong {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.help-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.82rem;
+  margin-bottom: 0.35rem;
+  opacity: 0.6;
+}
+
+.help-key {
+  font-size: 0.75rem;
+  min-width: 50px;
+  opacity: 1;
+  letter-spacing: 0.05em;
+}
+
+.help-support {
+  border-top: 1px solid rgba(232, 228, 223, 0.1);
+  padding-top: 1.2rem;
+}
+
+.help-close-hint {
+  font-size: 0.65rem;
+  opacity: 0.2;
+  margin-top: 2rem;
+  text-align: center;
+}
