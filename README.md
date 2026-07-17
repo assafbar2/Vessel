@@ -12,7 +12,7 @@
 
 Vessel translates these principles into a writing tool:
 
-- **The Breathing Canvas** gently expands and contracts as you write, creating a rhythmic bilateral pulse that mirrors EMDR's core mechanism
+- **The Breathing Canvas** gently expands and contracts as you write, creating a slow visual rhythm inspired by bilateral-stimulation practices
 - **Adaptive Atmosphere** reads your writing cadence and shifts the environment — colors, weight, energy — in response to your state
 - **Transient Mode** lets words dissolve after they've been written, reflecting the EMDR principle that processing doesn't require holding on
 - **The Vault** provides encrypted, passphrase-protected storage — a safe container for what you choose to keep
@@ -57,12 +57,12 @@ In transient mode, invoke the Ash Command to dissolve all remaining text instant
 
 ### The Vault `⌘⇧V`
 
-Every permanent-mode session is automatically encrypted and stored in your local vault. Opening the vault moves your current text into storage and clears the canvas.
+Permanent-mode writing is encrypted and stored when you open the vault, quit normally, or reach the inactivity cutoff. Opening the vault moves your current text into storage and clears the canvas. A crash or forced shutdown can still lose text that has not yet been stored.
 
 The vault is:
 
 - **Passphrase-protected** — you set it on first use
-- **Encrypted with AES-256-GCM** — military-grade encryption for all stored content
+- **Encrypted with AES-256-GCM** — authenticated encryption for all stored content
 - **Stored locally** — never in the cloud
 - **Browsable** — sessions displayed as colored blocks reflecting the emotional tone of each writing session
 
@@ -73,8 +73,8 @@ Vessel was designed with the understanding that therapeutic writing is deeply pr
 | Layer | Detail |
 |-------|--------|
 | **Encryption** | AES-256-GCM for all stored content |
-| **Key Storage** | macOS Keychain — encryption key never touches disk |
-| **Vault Access** | SHA-256 hashed passphrase — second layer of protection |
+| **Key Storage** | macOS Keychain — kept out of the application database |
+| **Vault Access** | Argon2id-hashed passphrase — second layer of protection |
 | **Architecture** | Local-first — no cloud, no accounts, no telemetry |
 | **Data Policy** | Nothing leaves your machine. Ever. |
 
@@ -125,7 +125,7 @@ Starts the Vite dev server and opens the Tauri window with hot-reload enabled.
 npm run tauri build
 ```
 
-Produces a signed `.dmg` installer in `src-tauri/target/release/bundle/dmg/`.
+Produces a `.dmg` installer in `src-tauri/target/release/bundle/dmg/`. Code signing requires a separately configured Apple Developer identity.
 
 ### Lint
 
@@ -188,6 +188,8 @@ Vessel is designed to support reflective and therapeutic writing. It is **not** 
 **v0.2.0 — Early Access**
 
 Vessel is functional and secure, but still evolving. Feedback, bug reports, and ideas are welcome via [Issues](../../issues).
+
+See [PHASE_2.md](PHASE_2.md) for the next-phase product, safety, reliability, and release plan.
 
 ### Changelog
 

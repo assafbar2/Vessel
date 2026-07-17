@@ -50,7 +50,9 @@ const Vault = ({ onClose }: VaultProps) => {
   const handleDelete = useCallback(
     (e: React.MouseEvent, id: string) => {
       e.stopPropagation();
-      removeSession(id);
+      if (window.confirm("Permanently delete this encrypted session?")) {
+        removeSession(id);
+      }
     },
     [removeSession],
   );
@@ -97,6 +99,15 @@ const Vault = ({ onClose }: VaultProps) => {
                 className="vault-block"
                 style={{ backgroundColor: session.average_vibe }}
                 onClick={() => selectSession(session.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    selectSession(session.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Open session from ${formatDate(session.created_at)}`}
               >
                 <div
                   className="vault-block-meta"
@@ -113,6 +124,7 @@ const Vault = ({ onClose }: VaultProps) => {
                   style={{ color: textColor }}
                   onClick={(e) => handleDelete(e, session.id)}
                   title="Delete session"
+                  aria-label={`Delete session from ${formatDate(session.created_at)}`}
                 >
                   &times;
                 </button>

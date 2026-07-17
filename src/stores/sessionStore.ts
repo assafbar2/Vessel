@@ -19,7 +19,7 @@ interface SessionStoreState {
   lastActivityTime: number;
   vibeDurations: VibeDurations;
   currentVibeStartTime: number | null;
-  commitFn: (() => Promise<void>) | null;
+  commitFn: (() => Promise<boolean>) | null;
   clearEditorFn: (() => void) | null;
 
   startSession: () => void;
@@ -29,7 +29,7 @@ interface SessionStoreState {
   getSessionDurationMs: () => number;
   getDominantState: () => VibeState;
   getAverageVibeColor: () => string;
-  setCommitFn: (fn: () => Promise<void>) => void;
+  setCommitFn: (fn: () => Promise<boolean>) => void;
   setClearEditorFn: (fn: () => void) => void;
   reset: () => void;
 }
@@ -54,7 +54,7 @@ const useSessionStore = create<SessionStoreState>((set, get) => ({
 
   recordActivity: () => set({ lastActivityTime: Date.now() }),
 
-  recordVibeChange: (previousVibe, _newVibe) => {
+  recordVibeChange: (previousVibe) => {
     const { currentVibeStartTime, vibeDurations } = get();
     if (!currentVibeStartTime) return;
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import useVibeStore, { type VibeState } from "../stores/vibeStore";
 
 const NEUTRAL_REEVAL_MS = 8_000; // Re-evaluate every 8s when in Neutral
@@ -8,8 +8,8 @@ const PAUSE_THRESHOLD_MS = 3_000;
  * Vibe Shift Engine
  *
  * Determines the emotional state based on cadence metrics:
- * - Grounding: WPM > 30 OR backspace > 30%
- * - Inspiration: WPM < 15 AND pause > 3s
+ * - Grounding: slow, deliberate writing or heavy editing
+ * - Inspiration: rapid, low-editing bursts
  * - Neutral: pass-through (re-evaluates every 8s)
  */
 export function useVibeShift() {
@@ -22,19 +22,17 @@ export function useVibeShift() {
   const neutralTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Determine the target vibe from current cadence
-  const evaluateVibe = (): VibeState => {
-    // Grounding: high speed or heavy editing
-    if (wpm > 30 || backspaceFreq > 30) {
+  const evaluateVibe = useCallback((): VibeState => {
+    if ((wpm > 0 && wpm < 15 && pauseDuration > PAUSE_THRESHOLD_MS) || backspaceFreq > 30) {
       return "grounding";
     }
 
-    // Inspiration: slow, contemplative writing
-    if (wpm < 15 && pauseDuration > PAUSE_THRESHOLD_MS) {
+    if (wpm > 30) {
       return "inspiration";
     }
 
     return "neutral";
-  };
+  }, [wpm, backspaceFreq, pauseDuration]);
 
   // React to cadence changes
   useEffect(() => {
@@ -53,7 +51,7 @@ export function useVibeShift() {
       // Entering Neutral — start re-evaluation timer
       setVibe("neutral");
     }
-  }, [wpm, backspaceFreq, pauseDuration]);
+  }, [currentVibe, evaluateVibe, setVibe]);
 
   // Neutral re-evaluation: every 8s, check if we should leave Neutral
   useEffect(() => {
@@ -77,7 +75,7 @@ export function useVibeShift() {
         neutralTimerRef.current = null;
       }
     };
-  }, [currentVibe]);
+  }, [currentVibe, evaluateVibe, setVibe]);
 }
 
 // Map vibe states to their visual properties

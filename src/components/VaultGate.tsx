@@ -18,9 +18,9 @@ const VaultGate = ({ onUnlocked }: VaultGateProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    hasVaultPassphrase().then((exists) => {
-      setMode(exists ? "verify" : "create");
-    });
+    hasVaultPassphrase()
+      .then((exists) => setMode(exists ? "verify" : "create"))
+      .catch(() => setError("The vault could not be opened."));
   }, []);
 
   useEffect(() => {
@@ -29,18 +29,32 @@ const VaultGate = ({ onUnlocked }: VaultGateProps) => {
 
   const handleVerify = useCallback(async () => {
     if (!value) return;
-    const ok = await verifyVaultPassphrase(value);
-    if (ok) {
-      onUnlocked();
-    } else {
-      setError("Wrong passphrase.");
-      setValue("");
+    try {
+      const ok = await verifyVaultPassphrase(value);
+      if (ok) {
+        onUnlocked();
+      } else {
+        setError("Wrong passphrase.");
+        setValue("");
+      }
+    } catch (err) {
+      if (String(err).includes("passphrase_reset_required")) {
+        setMode("create");
+        setStep("enter");
+        setValue("");
+        setError("Your passphrase needs to be reset after a security upgrade.");
+      } else {
+        setError("The passphrase could not be verified.");
+      }
     }
   }, [value, onUnlocked]);
 
   const handleCreate = useCallback(async () => {
     if (step === "enter") {
-      if (value.length < 1) return;
+      if (value.length < 8) {
+        setError("Use at least 8 characters.");
+        return;
+      }
       setStep("confirm");
       setConfirmValue("");
       setError("");
@@ -55,8 +69,12 @@ const VaultGate = ({ onUnlocked }: VaultGateProps) => {
       return;
     }
 
-    await setVaultPassphrase(value);
-    onUnlocked();
+    try {
+      await setVaultPassphrase(value);
+      onUnlocked();
+    } catch {
+      setError("The passphrase could not be saved.");
+    }
   }, [step, value, confirmValue, onUnlocked]);
 
   const handleKeyDown = useCallback(

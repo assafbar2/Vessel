@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import type { Editor } from "@tiptap/react";
 import useTransientStore from "../stores/transientStore";
-import { createParticlesFromDOM, type AshParticle } from "../components/AshCanvas";
+import { createParticlesFromDOM, type AshParticle } from "../lib/ashParticles";
 
 export function useAshCommand(
   editor: Editor | null,
@@ -11,7 +11,7 @@ export function useAshCommand(
   const [ashParticles, setAshParticles] = useState<AshParticle[]>([]);
 
   const triggerAsh = useCallback(() => {
-    if (!editor) return;
+    if (!editor || useTransientStore.getState().mode !== "transient") return;
 
     // Sample particle positions from current text blocks
     const particles = createParticlesFromDOM();

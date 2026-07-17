@@ -15,11 +15,11 @@ export function useSessionTracking(editor: Editor | null) {
   const commitInProgressRef = useRef(false);
 
   const commitSession = useCallback(async () => {
-    if (!editor || commitInProgressRef.current) return;
+    if (!editor || commitInProgressRef.current) return false;
 
     const text = editor.getText();
     const wordCount = text.split(/\s+/).filter(Boolean).length;
-    if (wordCount === 0) return;
+    if (wordCount === 0) return true;
 
     commitInProgressRef.current = true;
 
@@ -38,8 +38,10 @@ export function useSessionTracking(editor: Editor | null) {
 
       await saveSession(content, metadata);
       useSessionStore.getState().reset();
+      return true;
     } catch (err) {
       console.error("Session commit failed:", err);
+      return false;
     } finally {
       commitInProgressRef.current = false;
     }
@@ -94,17 +96,19 @@ export function useSessionTracking(editor: Editor | null) {
 
       const mode = useTransientStore.getState().mode;
       if (mode === "permanent") {
-        await commitSession();
+        const saved = await commitSession();
+        if (!saved) return;
       } else {
         useSessionStore.getState().reset();
       }
 
+      editor?.commands.clearContent();
       // Start a fresh session
       useSessionStore.getState().startSession();
     }, INACTIVITY_CHECK_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [commitSession]);
+  }, [commitSession, editor]);
 
   // Commit on app close (flag prevents infinite close loop)
   const isClosingRef = useRef(false);
@@ -123,9 +127,11 @@ export function useSessionTracking(editor: Editor | null) {
           const wordCount = text.split(/\s+/).filter(Boolean).length;
           if (wordCount > 0) {
             event.preventDefault();
-            await commitSession();
-            isClosingRef.current = true;
-            getCurrentWindow().destroy();
+            const saved = await commitSession();
+            if (saved) {
+              isClosingRef.current = true;
+              getCurrentWindow().destroy();
+            }
           }
         }
       })

@@ -33,7 +33,7 @@ pub fn get_or_create_key() -> Result<[u8; 32], String> {
         Err(keyring::Error::NoEntry) => {
             let mut key = [0u8; 32];
             OsRng.fill_bytes(&mut key);
-            let encoded = B64.encode(&key);
+            let encoded = B64.encode(key);
             entry
                 .set_password(&encoded)
                 .map_err(|e| format!("Keyring store error: {e}"))?;
@@ -48,8 +48,7 @@ pub fn get_or_create_key() -> Result<[u8; 32], String> {
 
 /// Encrypt plaintext with AES-256-GCM. Returns base64(nonce || ciphertext || tag).
 pub fn encrypt(plaintext: &[u8], key: &[u8; 32]) -> Result<String, String> {
-    let cipher = Aes256Gcm::new_from_slice(key)
-        .map_err(|e| format!("Cipher init error: {e}"))?;
+    let cipher = Aes256Gcm::new_from_slice(key).map_err(|e| format!("Cipher init error: {e}"))?;
 
     let mut nonce_bytes = [0u8; 12];
     OsRng.fill_bytes(&mut nonce_bytes);
@@ -80,8 +79,7 @@ pub fn decrypt(encoded: &str, key: &[u8; 32]) -> Result<Vec<u8>, String> {
     let (nonce_bytes, ciphertext) = combined.split_at(12);
     let nonce = Nonce::from_slice(nonce_bytes);
 
-    let cipher = Aes256Gcm::new_from_slice(key)
-        .map_err(|e| format!("Cipher init error: {e}"))?;
+    let cipher = Aes256Gcm::new_from_slice(key).map_err(|e| format!("Cipher init error: {e}"))?;
 
     cipher
         .decrypt(nonce, ciphertext)

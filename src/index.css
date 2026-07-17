@@ -243,6 +243,11 @@ body {
   transform: scale(1.04);
 }
 
+.vault-block:focus-visible {
+  outline: 2px solid #e8e4df;
+  outline-offset: 2px;
+}
+
 .vault-block-meta {
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -254,6 +259,11 @@ body {
 }
 
 .vault-block:hover .vault-block-meta {
+  opacity: 1;
+}
+
+.vault-block:focus-visible .vault-block-meta,
+.vault-block:focus-within .vault-block-meta {
   opacity: 1;
 }
 
@@ -273,6 +283,11 @@ body {
 
 .vault-block:hover .vault-block-delete {
   opacity: 0.5;
+}
+
+.vault-block-delete:focus-visible {
+  opacity: 1;
+  outline: 1px solid currentColor;
 }
 
 .vault-block-delete:hover {
@@ -449,4 +464,15 @@ body {
   opacity: 0.2;
   margin-top: 2rem;
   text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

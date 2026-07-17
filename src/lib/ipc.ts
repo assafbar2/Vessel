@@ -47,3 +47,7 @@ export async function setVaultPassphrase(passphrase: string): Promise<void> {
 export async function verifyVaultPassphrase(passphrase: string): Promise<boolean> {
   return invoke("verify_vault_passphrase", { passphrase });
 }
+
+export async function lockVault(): Promise<void> {
+  await invoke("lock_vault");
+}

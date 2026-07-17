@@ -18,8 +18,14 @@ const HelpOverlay = ({ onClose }: HelpOverlayProps) => {
 
   return (
     <div className="help-overlay" onClick={onClose}>
-      <div className="help-content" onClick={(e) => e.stopPropagation()}>
-        <div className="help-title">Vessel</div>
+      <div
+        className="help-content"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="vessel-help-title"
+      >
+        <div className="help-title" id="vessel-help-title">Vessel</div>
         <div className="help-subtitle">The Breathing Canvas</div>
 
         <p className="help-description">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useTransientStore from "../stores/transientStore";
 
 type NoticeContent = {
@@ -21,22 +21,18 @@ const TransientNotice = () => {
   const showNotice = useTransientStore((s) => s.showNotice);
   const noticeMode = useTransientStore((s) => s.noticeMode);
   const setShowNotice = useTransientStore((s) => s.setShowNotice);
-  const [visible, setVisible] = useState(false);
-
   const content = noticeMode ? NOTICES[noticeMode] : null;
 
   useEffect(() => {
     if (showNotice && content) {
-      setVisible(true);
       const timer = setTimeout(() => {
-        setVisible(false);
         setShowNotice(false);
       }, 3000);
       return () => clearTimeout(timer);
     }
   }, [showNotice, content, setShowNotice]);
 
-  if (!visible || !content) return null;
+  if (!showNotice || !content) return null;
 
   return (
     <div className="transient-notice">

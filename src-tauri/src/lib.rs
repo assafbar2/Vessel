@@ -13,20 +13,20 @@ pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
             // — Encryption key —
-            let key = crypto::get_or_create_key()
-                .map_err(|e| Box::new(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
+            let key =
+                crypto::get_or_create_key().map_err(|e| Box::new(std::io::Error::other(e)))?;
 
             // — Database —
             let data_dir = app
                 .path()
                 .app_data_dir()
-                .map_err(|e| Box::new(std::io::Error::new(std::io::ErrorKind::Other, e.to_string())))?;
-            let conn = db::init_db(&data_dir)
-                .map_err(|e| Box::new(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
+                .map_err(|e| Box::new(std::io::Error::other(e.to_string())))?;
+            let conn = db::init_db(&data_dir).map_err(|e| Box::new(std::io::Error::other(e)))?;
 
             app.manage(AppState {
                 db: Mutex::new(conn),
                 key,
+                vault_unlocked: Mutex::new(false),
             });
 
             // — Application Menu —
@@ -69,6 +69,7 @@ pub fn run() {
             commands::has_vault_passphrase,
             commands::set_vault_passphrase,
             commands::verify_vault_passphrase,
+            commands::lock_vault,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Vessel");

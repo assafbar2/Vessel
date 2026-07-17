@@ -5,6 +5,7 @@ import Vault from "./components/Vault";
 import HelpOverlay from "./components/HelpOverlay";
 import useTransientStore from "./stores/transientStore";
 import useSessionStore from "./stores/sessionStore";
+import { lockVault } from "./lib/ipc";
 
 type View = "editor" | "vault";
 
@@ -25,8 +26,10 @@ function App() {
   const openVault = useCallback(async () => {
     const mode = useTransientStore.getState().mode;
     const { commitFn, clearEditorFn } = useSessionStore.getState();
-    if (mode === "permanent" && commitFn) {
-      await commitFn();
+    if (mode === "permanent") {
+      if (!commitFn) return;
+      const saved = await commitFn();
+      if (!saved) return;
     }
     if (clearEditorFn) {
       clearEditorFn();
@@ -35,12 +38,16 @@ function App() {
     setView("vault");
   }, []);
 
-  const closeVault = useCallback(() => {
-    setView("editor");
-    requestAnimationFrame(() => {
-      const el = document.querySelector(".tiptap") as HTMLElement;
-      el?.focus();
-    });
+  const closeVault = useCallback(async () => {
+    try {
+      await lockVault();
+    } finally {
+      setView("editor");
+      requestAnimationFrame(() => {
+        const el = document.querySelector(".tiptap") as HTMLElement;
+        el?.focus();
+      });
+    }
   }, []);
 
   const closeHelp = useCallback(() => {

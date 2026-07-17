@@ -46,7 +46,7 @@ export const TransientBlock = Extension.create({
       new Plugin({
         key: new PluginKey("transientBlockIds"),
         appendTransaction: (_transactions, _oldState, newState) => {
-          let tr = newState.tr;
+          const tr = newState.tr;
           let modified = false;
 
           newState.doc.descendants((node, pos) => {

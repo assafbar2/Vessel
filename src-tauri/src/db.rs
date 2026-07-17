@@ -25,12 +25,10 @@ pub struct SessionMeta {
 
 /// Initialize the SQLite database and run migrations.
 pub fn init_db(app_data_dir: &Path) -> Result<Connection, String> {
-    std::fs::create_dir_all(app_data_dir)
-        .map_err(|e| format!("Failed to create data dir: {e}"))?;
+    std::fs::create_dir_all(app_data_dir).map_err(|e| format!("Failed to create data dir: {e}"))?;
 
     let db_path = app_data_dir.join("vessel.db");
-    let conn = Connection::open(&db_path)
-        .map_err(|e| format!("Failed to open database: {e}"))?;
+    let conn = Connection::open(&db_path).map_err(|e| format!("Failed to open database: {e}"))?;
 
     conn.execute_batch(
         "CREATE TABLE IF NOT EXISTS sessions (
