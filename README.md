@@ -1,48 +1,60 @@
 <p align="center">
   <h1 align="center">Vessel</h1>
   <p align="center"><em>The Breathing Canvas</em></p>
-  <p align="center">A therapeutic writing environment inspired by EMDR.</p>
+  <p align="center">A reflective-writing and grounding environment inspired by EMDR.</p>
 </p>
 
 ---
 
 ## The Idea
 
-[EMDR](https://www.emdria.org/about-emdr-therapy/) (Eye Movement Desensitization and Reprocessing) is a clinically validated psychotherapy that helps people process traumatic and distressing memories. At its core is **bilateral stimulation** — rhythmic, alternating engagement (eye movements, taps, tones) that appears to help the brain reprocess difficult material, reducing its emotional charge.
+[EMDR](https://www.emdria.org/about-emdr-therapy/) (Eye Movement Desensitization and Reprocessing) is an evidence-based, structured psychotherapy for trauma. Bilateral stimulation is one component of that larger clinical protocol.
 
-Vessel translates these principles into a writing tool:
+Vessel takes design inspiration from rhythm, attention, choice, and safe containment. It does **not** deliver EMDR or guide trauma reprocessing.
 
-- **The Breathing Canvas** gently expands and contracts as you write, creating a slow visual rhythm inspired by bilateral-stimulation practices
-- **Adaptive Atmosphere** reads your writing cadence and shifts the environment — colors, weight, energy — in response to your state
-- **Transient Mode** lets words dissolve after they've been written, reflecting the EMDR principle that processing doesn't require holding on
+- **The Focus Rhythm** gently expands and contracts as you write and can be switched off at any time
+- **Cadence Atmosphere** responds to observable writing pace—or lets you choose Still, Flow, or Surge manually
+- **Transient Mode** lets words dissolve after they have been written
 - **The Vault** provides encrypted, passphrase-protected storage — a safe container for what you choose to keep
+- **Grounding Tools** offer optional sensory orientation, gentle breathing, and a post-writing check-out
 
-**This is not therapy.** Vessel is a writing tool. But it is designed with therapeutic principles in mind, for people who find that writing helps them process.
+**This is not therapy or EMDR treatment.** Vessel is a private writing and grounding tool for people who find reflective writing useful.
 
 ## Who Is This For
 
 - People who use writing to process difficult experiences
-- Those exploring therapeutic or reflective writing practices
+- Those exploring reflective writing and grounding practices
 - Anyone who values privacy and security in their personal writing
-- Writers who want an environment that responds to their emotional state
+- Writers who want a calm environment that can respond to cadence or be set manually
 
 > **Important:** Vessel is not a substitute for professional mental health support. If you are experiencing a mental health crisis, please reach out to a qualified professional or contact a crisis helpline (see [Resources](#if-you-need-support) below).
 
 ## Features
 
-### The Breathing Canvas
+### The Focus Rhythm
 
-The writing surface gently breathes — expanding and contracting on a 5.5-second cycle. This subtle bilateral rhythm creates a meditative pace that supports focused, embodied writing.
+The writing surface can gently expand and contract on a 5.5-second cycle. This optional visual focus rhythm can be turned off from the canvas controls and is disabled when the operating system requests reduced motion.
 
-### Vibe Shift
+### Cadence Atmosphere
 
-Vessel tracks your writing cadence in real time and adapts the entire atmosphere:
+In **Auto**, Vessel uses typing pace and editing intensity—not emotional inference—to adapt the atmosphere:
 
-- **Grounding** (slow, deliberate typing) — dark, warm tones
-- **Neutral** (steady flow) — soft, light palette
-- **Inspiration** (rapid bursts) — vivid, energetic colors
+- **Still** (slow, paused, or revision-heavy cadence) — dark, warm tones
+- **Flow** (steady cadence) — soft, light palette
+- **Surge** (rapid bursts) — vivid, energetic colors
 
-Transitions happen over 12–15 seconds, like weather shifting — never jarring.
+Choose any atmosphere manually whenever you prefer. Transitions happen over 12–15 seconds, like weather shifting.
+
+### Optional Grounding and Check-out
+
+Open the grounding panel from the canvas or with `⌘⇧G`:
+
+- **5–4–3–2–1** sensory orientation
+- **Gentle breathing** with a four-in, six-out rhythm and immediate pause
+- **Here, Now** orientation to the current date, time, place, and available choices
+- **Post-writing check-out** to save and open the vault, ground before deciding, or keep writing
+
+These are optional coping aids, not therapy or trauma-processing instructions.
 
 ### Writing Modes
 
@@ -64,11 +76,11 @@ The vault is:
 - **Passphrase-protected** — you set it on first use
 - **Encrypted with AES-256-GCM** — authenticated encryption for all stored content
 - **Stored locally** — never in the cloud
-- **Browsable** — sessions displayed as colored blocks reflecting the emotional tone of each writing session
+- **Browsable** — sessions displayed as colored blocks reflecting the session's cadence palette
 
 ## Security & Privacy
 
-Vessel was designed with the understanding that therapeutic writing is deeply private.
+Vessel was designed with the understanding that reflective writing is deeply private.
 
 | Layer | Detail |
 |-------|--------|
@@ -86,14 +98,14 @@ Vessel was designed with the understanding that therapeutic writing is deeply pr
 
 ### Install
 
-1. Download **`Vessel_0.2.0_aarch64.dmg`** from the [Releases](../../releases) page
+1. Download **`Vessel_0.3.0_aarch64.dmg`** from the [Releases](../../releases) page
 2. Open the DMG and drag **Vessel** to your Applications folder
 3. On first launch, macOS may block the unsigned app:
    - Go to **System Settings → Privacy & Security**
    - Scroll down and click **"Open Anyway"** next to the Vessel warning
 4. Vessel opens maximized. Start writing.
 
-> **Note:** v0.2 is built for Apple Silicon. Intel Mac and other platform support is planned.
+> **Note:** v0.3 is built for Apple Silicon. Intel Mac and other platform support is planned.
 
 ## Running from Source
 
@@ -140,13 +152,14 @@ npm run lint
 | `⌘T` | Toggle Permanent / Transient mode |
 | `⌘⇧D` | Ash Command — dissolve all text |
 | `⌘⇧V` | Open the Vault |
+| `⌘⇧G` | Open optional grounding tools |
 | `⌘?` | Help guide |
 | `Esc` | Return from Vault to canvas |
 
 ### Writing Flow
 
 1. **Open Vessel.** The canvas breathes. Start writing.
-2. **Let the atmosphere shift** with your pace — don't fight it.
+2. **Use Auto or choose an atmosphere** — Still, Flow, or Surge.
 3. **To write without keeping anything,** press `⌘T` for transient mode.
 4. **When you're done,** press `⌘⇧V` to move your text to the vault.
 5. **Set a passphrase** the first time. Enter it each time you open the vault.
@@ -154,12 +167,12 @@ npm run lint
 
 ## Using Vessel Responsibly
 
-Vessel is designed to support reflective and therapeutic writing. It is **not** a replacement for professional therapy or mental health treatment.
+Vessel supports reflective writing and optional grounding. It does **not** provide EMDR or replace professional mental health care.
 
 ### Guidelines
 
 - Take breaks when writing becomes overwhelming
-- This tool works best **alongside** professional support, not instead of it
+- If you are using Vessel around trauma, consider doing so alongside professional support
 - If writing triggers distressing emotions, consider working with a therapist who can provide guidance
 - You can always switch to transient mode and let the words dissolve
 
@@ -185,13 +198,32 @@ Vessel is designed to support reflective and therapeutic writing. It is **not** 
 
 ## Version
 
-**v0.2.0 — Early Access**
+**v0.3.0 — Early Access**
 
 Vessel is functional and secure, but still evolving. Feedback, bug reports, and ideas are welcome via [Issues](../../issues).
 
+See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 See [PHASE_2.md](PHASE_2.md) for the next-phase product, safety, reliability, and release plan.
 
+See [ROADMAP.md](ROADMAP.md) for **The Planning**, a version-by-version outline
+of possible work after v0.3. The roadmap is planning only; future-version work
+has not started unless the repository shows otherwise.
+
+The separate [Anchor specification](ANCHOR_SPEC.md) describes an offline-first
+mobile grounding companion concept in functional and technical detail.
+[HARBORLINES_SPEC.md](HARBORLINES_SPEC.md) preserves the concept's earlier
+working-title specification.
+
 ### Changelog
+
+**v0.3.0**
+- Repositioned Vessel as a reflective-writing and grounding environment inspired by EMDR—not EMDR treatment
+- Replaced emotional inference labels with observable cadence states: Still, Flow, and Surge
+- Added Auto and manual atmosphere selection
+- Added an explicit focus-rhythm toggle with reduced-motion defaults
+- Added optional 5–4–3–2–1 grounding, gentle breathing, present-time orientation, and post-writing check-out
+- Added the functional and technical Harborlines product specification
 
 **v0.2.0**
 - Passphrase-protected vault — set on first use, required every time you open the vault
@@ -203,7 +235,7 @@ See [PHASE_2.md](PHASE_2.md) for the next-phase product, safety, reliability, an
 
 **v0.1.0**
 - The Breathing Canvas — 5.5-second rhythmic breathing animation
-- Vibe Shift — atmosphere adapts to your writing cadence (grounding, neutral, inspiration)
+- Cadence Atmosphere — responds to writing cadence with Still, Flow, and Surge palettes
 - Permanent and Transient writing modes
 - The Ash Command — dissolve all text instantly
 - The Vault — AES-256-GCM encrypted local storage with visual session grid
