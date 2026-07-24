@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import useVibeStore from "../stores/vibeStore";
-import { VIBE_CONFIG } from "./useVibeShift";
+import { CADENCE_CONFIG } from "./useVibeShift";
 
 const MIN_WEIGHT = 300;
 const MAX_WEIGHT = 700;
@@ -11,25 +11,28 @@ const LERP_SPEED = 0.08; // Smoothing factor per frame
  * Adaptive Typography
  *
  * Continuously interpolates --vessel-weight between 300-700 based on WPM.
- * The vibe state provides a target "snap" weight; the WPM provides
+ * The cadence state provides a target "snap" weight; WPM provides
  * a smooth in-between. Uses requestAnimationFrame for fluid updates.
  */
 export function useAdaptiveWeight() {
   const wpm = useVibeStore((s) => s.wpm);
-  const currentVibe = useVibeStore((s) => s.currentVibe);
+  const currentCadence = useVibeStore((s) => s.currentCadence);
+  const atmosphereMode = useVibeStore((s) => s.atmosphereMode);
+  const manualCadence = useVibeStore((s) => s.manualCadence);
   const currentWeight = useRef(400);
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
-    const vibeTarget = VIBE_CONFIG[currentVibe].fontWeight;
+    const activeCadence =
+      atmosphereMode === "manual" ? manualCadence : currentCadence;
+    const cadenceTarget = CADENCE_CONFIG[activeCadence].fontWeight;
 
     // WPM-derived weight: higher WPM → heavier weight
     const wpmNormalized = Math.min(wpm / MAX_WPM_FOR_SCALE, 1);
     const wpmWeight = MIN_WEIGHT + wpmNormalized * (MAX_WEIGHT - MIN_WEIGHT);
 
-    // Blend: vibe state snaps to a target, WPM provides nuance
-    // Favor the vibe target (70%) with WPM influence (30%)
-    const targetWeight = vibeTarget * 0.7 + wpmWeight * 0.3;
+    // Favor the cadence target (70%) with WPM influence (30%).
+    const targetWeight = cadenceTarget * 0.7 + wpmWeight * 0.3;
     const clampedTarget = Math.max(MIN_WEIGHT, Math.min(MAX_WEIGHT, targetWeight));
 
     const animate = () => {
@@ -56,5 +59,5 @@ export function useAdaptiveWeight() {
     rafRef.current = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(rafRef.current);
-  }, [wpm, currentVibe]);
+  }, [wpm, currentCadence, atmosphereMode, manualCadence]);
 }

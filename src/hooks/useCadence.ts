@@ -2,7 +2,7 @@ import { useCallback, useRef } from "react";
 import useVibeStore from "../stores/vibeStore";
 
 const WINDOW_MS = 10_000; // 10-second rolling window
-const PAUSE_THRESHOLD_MS = 3_000; // 3s pause triggers Inspiration check
+const PAUSE_THRESHOLD_MS = 3_000; // A 3s pause is observable cadence input.
 
 interface KeystrokeEntry {
   time: number;

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
-export type VibeState = "grounding" | "neutral" | "inspiration";
+export type CadenceState = "still" | "flow" | "surge";
+export type AtmosphereMode = "adaptive" | "manual";
 
 interface CadenceMetrics {
   wpm: number;
@@ -8,28 +9,33 @@ interface CadenceMetrics {
   pauseDuration: number; // ms since last keystroke
 }
 
-interface VibeStoreState {
+interface CadenceStoreState {
   // Cadence metrics
   wpm: number;
   backspaceFreq: number;
   pauseDuration: number;
 
-  // Vibe state
-  currentVibe: VibeState;
-  previousVibe: VibeState | null;
+  currentCadence: CadenceState;
+  previousCadence: CadenceState | null;
+  atmosphereMode: AtmosphereMode;
+  manualCadence: CadenceState;
 
   // Actions
   updateCadence: (metrics: CadenceMetrics) => void;
-  setVibe: (vibe: VibeState) => void;
+  setCadence: (cadence: CadenceState) => void;
+  setAtmosphereMode: (mode: AtmosphereMode) => void;
+  setManualCadence: (cadence: CadenceState) => void;
 }
 
-const useVibeStore = create<VibeStoreState>((set) => ({
+const useVibeStore = create<CadenceStoreState>((set) => ({
   wpm: 0,
   backspaceFreq: 0,
   pauseDuration: 0,
 
-  currentVibe: "neutral",
-  previousVibe: null,
+  currentCadence: "flow",
+  previousCadence: null,
+  atmosphereMode: "adaptive",
+  manualCadence: "flow",
 
   updateCadence: (metrics) =>
     set(() => ({
@@ -38,11 +44,17 @@ const useVibeStore = create<VibeStoreState>((set) => ({
       pauseDuration: metrics.pauseDuration,
     })),
 
-  setVibe: (vibe) =>
+  setCadence: (cadence) =>
     set((state) => ({
-      currentVibe: vibe,
-      previousVibe: state.currentVibe !== vibe ? state.currentVibe : state.previousVibe,
+      currentCadence: cadence,
+      previousCadence:
+        state.currentCadence !== cadence
+          ? state.currentCadence
+          : state.previousCadence,
     })),
+  setAtmosphereMode: (mode) => set({ atmosphereMode: mode }),
+  setManualCadence: (cadence) =>
+    set({ manualCadence: cadence, atmosphereMode: "manual" }),
 }));
 
 export default useVibeStore;

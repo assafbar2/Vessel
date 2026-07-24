@@ -85,3 +85,37 @@ pub fn decrypt(encoded: &str, key: &[u8; 32]) -> Result<Vec<u8>, String> {
         .decrypt(nonce, ciphertext)
         .map_err(|e| format!("Decryption error: {e}"))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{decrypt, encrypt};
+
+    #[test]
+    fn encryption_round_trip_preserves_content() {
+        let key = [7_u8; 32];
+        let plaintext = b"A private synthetic writing sample.";
+
+        let encrypted = encrypt(plaintext, &key).expect("encryption should succeed");
+        let decrypted = decrypt(&encrypted, &key).expect("decryption should succeed");
+
+        assert_eq!(decrypted, plaintext);
+    }
+
+    #[test]
+    fn encryption_uses_unique_nonces() {
+        let key = [9_u8; 32];
+        let first = encrypt(b"same content", &key).expect("first encryption should succeed");
+        let second = encrypt(b"same content", &key).expect("second encryption should succeed");
+
+        assert_ne!(first, second);
+    }
+
+    #[test]
+    fn wrong_key_and_tampering_are_rejected() {
+        let key = [11_u8; 32];
+        let encrypted = encrypt(b"synthetic content", &key).expect("encryption should succeed");
+
+        assert!(decrypt(&encrypted, &[12_u8; 32]).is_err());
+        assert!(decrypt("not valid base64", &key).is_err());
+    }
+}

@@ -6,12 +6,14 @@ import HelpOverlay from "./components/HelpOverlay";
 import useTransientStore from "./stores/transientStore";
 import useSessionStore from "./stores/sessionStore";
 import { lockVault } from "./lib/ipc";
+import SupportOverlay, { type SupportView } from "./components/SupportOverlay";
 
 type View = "editor" | "vault";
 
 function App() {
   const [view, setView] = useState<View>("editor");
   const [showHelp, setShowHelp] = useState(false);
+  const [supportView, setSupportView] = useState<SupportView | null>(null);
 
   // Listen for Help menu item from Tauri
   useEffect(() => {
@@ -58,8 +60,22 @@ function App() {
     });
   }, []);
 
+  const closeSupport = useCallback(() => {
+    setSupportView(null);
+    requestAnimationFrame(() => {
+      const el = document.querySelector(".tiptap") as HTMLElement;
+      el?.focus();
+    });
+  }, []);
+
+  const saveFromCheckout = useCallback(async () => {
+    setSupportView(null);
+    await openVault();
+  }, [openVault]);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      if (supportView) return;
       // Cmd+Shift+V / Ctrl+Shift+V to toggle vault
       if (
         (e.metaKey || e.ctrlKey) &&
@@ -88,8 +104,17 @@ function App() {
         }
         return;
       }
+      // Cmd+Shift+G / Ctrl+Shift+G to open optional grounding tools
+      if (
+        (e.metaKey || e.ctrlKey) &&
+        e.shiftKey &&
+        (e.key === "g" || e.key === "G")
+      ) {
+        e.preventDefault();
+        setSupportView("menu");
+      }
     },
-    [view, showHelp, openVault, closeVault, closeHelp],
+    [view, showHelp, supportView, openVault, closeVault, closeHelp],
   );
 
   useEffect(() => {
@@ -100,10 +125,17 @@ function App() {
   return (
     <>
       <div style={{ display: view === "editor" ? "block" : "none" }}>
-        <Editor />
+        <Editor onOpenSupport={setSupportView} />
       </div>
       {view === "vault" && <Vault onClose={closeVault} />}
       {showHelp && <HelpOverlay onClose={closeHelp} />}
+      {supportView && (
+        <SupportOverlay
+          initialView={supportView}
+          onClose={closeSupport}
+          onSaveAndOpenVault={saveFromCheckout}
+        />
+      )}
     </>
   );
 }

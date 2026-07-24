@@ -11,6 +11,8 @@ const ShortcutHint = () => {
       <span className="shortcut-hint-sep">/</span>
       <span>{mod}+Shift+V</span> vault
       <span className="shortcut-hint-sep">/</span>
+      <span>{mod}+Shift+G</span> ground
+      <span className="shortcut-hint-sep">/</span>
       <span>{mod}+?</span> help
     </div>
   );
