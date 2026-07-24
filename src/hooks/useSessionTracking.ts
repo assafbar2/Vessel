@@ -5,13 +5,13 @@ import useVibeStore from "../stores/vibeStore";
 import useTransientStore from "../stores/transientStore";
 import useSessionStore from "../stores/sessionStore";
 import { saveSession } from "../lib/ipc";
-import type { VibeState } from "../stores/vibeStore";
+import type { CadenceState } from "../stores/vibeStore";
 
 const INACTIVITY_THRESHOLD_MS = 45 * 60 * 1000; // 45 minutes
 const INACTIVITY_CHECK_INTERVAL_MS = 60_000; // check every 60s
 
 export function useSessionTracking(editor: Editor | null) {
-  const prevVibeRef = useRef<VibeState | null>(null);
+  const previousCadenceRef = useRef<CadenceState | null>(null);
   const commitInProgressRef = useRef(false);
 
   const commitSession = useCallback(async () => {
@@ -24,13 +24,17 @@ export function useSessionTracking(editor: Editor | null) {
     commitInProgressRef.current = true;
 
     try {
-      const currentVibe = useVibeStore.getState().currentVibe;
-      useSessionStore.getState().flushCurrentVibeDuration(currentVibe);
+      const cadenceState = useVibeStore.getState();
+      const activeCadence =
+        cadenceState.atmosphereMode === "manual"
+          ? cadenceState.manualCadence
+          : cadenceState.currentCadence;
+      useSessionStore.getState().flushCurrentCadenceDuration(activeCadence);
 
       const store = useSessionStore.getState();
       const content = JSON.stringify(editor.getJSON());
       const metadata = {
-        average_vibe: store.getAverageVibeColor(),
+        average_vibe: store.getAverageCadenceColor(),
         dominant_state: store.getDominantState(),
         duration_ms: store.getSessionDurationMs(),
         word_count: wordCount,
@@ -68,19 +72,26 @@ export function useSessionTracking(editor: Editor | null) {
     return unsub;
   }, []);
 
-  // Track vibe duration changes
+  // Track cadence duration changes
   useEffect(() => {
     const unsub = useVibeStore.subscribe((state) => {
-      const prev = prevVibeRef.current;
-      if (prev !== null && prev !== state.currentVibe) {
+      const activeCadence =
+        state.atmosphereMode === "manual"
+          ? state.manualCadence
+          : state.currentCadence;
+      const previous = previousCadenceRef.current;
+      if (previous !== null && previous !== activeCadence) {
         useSessionStore
           .getState()
-          .recordVibeChange(prev, state.currentVibe);
+          .recordCadenceChange(previous, activeCadence);
       }
-      prevVibeRef.current = state.currentVibe;
+      previousCadenceRef.current = activeCadence;
     });
-    // Initialize ref
-    prevVibeRef.current = useVibeStore.getState().currentVibe;
+    const initial = useVibeStore.getState();
+    previousCadenceRef.current =
+      initial.atmosphereMode === "manual"
+        ? initial.manualCadence
+        : initial.currentCadence;
     return unsub;
   }, []);
 

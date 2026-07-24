@@ -131,3 +131,63 @@ pub fn delete_session(conn: &Connection, id: &str) -> Result<(), String> {
         .map_err(|e| format!("Delete failed: {e}"))?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        delete_session, get_setting, init_db, load_session_content, load_session_list,
+        save_session, set_setting, SessionRecord,
+    };
+
+    fn temporary_data_dir() -> std::path::PathBuf {
+        std::env::temp_dir().join(format!("vessel-db-test-{}", uuid::Uuid::new_v4()))
+    }
+
+    #[test]
+    fn database_round_trip_and_delete() {
+        let data_dir = temporary_data_dir();
+        let conn = init_db(&data_dir).expect("database initialization should succeed");
+        let record = SessionRecord {
+            id: "synthetic-session".into(),
+            encrypted_content: "synthetic-ciphertext".into(),
+            average_vibe: "#F5F0EB".into(),
+            dominant_state: "flow".into(),
+            duration_ms: 42_000,
+            word_count: 7,
+            created_at: "2026-01-01T00:00:00Z".into(),
+        };
+
+        save_session(&conn, &record).expect("session save should succeed");
+        let sessions = load_session_list(&conn).expect("session list should load");
+        assert_eq!(sessions.len(), 1);
+        assert_eq!(sessions[0].dominant_state, "flow");
+        assert_eq!(
+            load_session_content(&conn, &record.id).expect("content should load"),
+            "synthetic-ciphertext"
+        );
+
+        delete_session(&conn, &record.id).expect("session delete should succeed");
+        assert!(load_session_list(&conn)
+            .expect("empty session list should load")
+            .is_empty());
+
+        drop(conn);
+        std::fs::remove_dir_all(data_dir).expect("temporary database should be removable");
+    }
+
+    #[test]
+    fn settings_are_replaced_atomically() {
+        let data_dir = temporary_data_dir();
+        let conn = init_db(&data_dir).expect("database initialization should succeed");
+
+        set_setting(&conn, "test-key", "first").expect("first setting write should succeed");
+        set_setting(&conn, "test-key", "second").expect("replacement setting write should succeed");
+        assert_eq!(
+            get_setting(&conn, "test-key").expect("setting should load"),
+            Some("second".into())
+        );
+
+        drop(conn);
+        std::fs::remove_dir_all(data_dir).expect("temporary database should be removable");
+    }
+}

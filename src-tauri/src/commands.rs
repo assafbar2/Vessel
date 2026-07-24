@@ -174,3 +174,30 @@ pub fn lock_vault(state: tauri::State<'_, AppState>) -> Result<(), String> {
     *unlocked = false;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{hash_passphrase, verify_passphrase};
+
+    #[test]
+    fn argon2_passphrase_round_trip() {
+        let hash =
+            hash_passphrase("synthetic-passphrase").expect("passphrase hashing should succeed");
+
+        assert!(
+            verify_passphrase("synthetic-passphrase", &hash).expect("verification should succeed")
+        );
+        assert!(!verify_passphrase("wrong-passphrase", &hash)
+            .expect("wrong passphrase should return false"));
+    }
+
+    #[test]
+    fn passphrase_hashes_use_unique_salts() {
+        let first = hash_passphrase("synthetic-passphrase")
+            .expect("first passphrase hashing should succeed");
+        let second = hash_passphrase("synthetic-passphrase")
+            .expect("second passphrase hashing should succeed");
+
+        assert_ne!(first, second);
+    }
+}

@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { motion } from "framer-motion";
 import { useCadence } from "../hooks/useCadence";
-import { useVibeShift, VIBE_CONFIG } from "../hooks/useVibeShift";
+import { useCadenceAtmosphere, CADENCE_CONFIG } from "../hooks/useVibeShift";
 import { useAdaptiveWeight } from "../hooks/useAdaptiveWeight";
 import { useTransientMode } from "../hooks/useTransientMode";
 import { useAshCommand } from "../hooks/useAshCommand";
@@ -15,16 +15,28 @@ import ModeIndicator from "./ModeIndicator";
 import TransientNotice from "./TransientNotice";
 import AshCanvas from "./AshCanvas";
 import ShortcutHint from "./ShortcutHint";
+import AtmosphereControls from "./AtmosphereControls";
+import useEditorStore from "../stores/editorStore";
+import type { SupportView } from "./SupportOverlay";
 
 const TRANSITION_DURATION = 13; // 12-15 seconds per spec
 
-const Editor = () => {
+interface EditorProps {
+  onOpenSupport: (view: SupportView) => void;
+}
+
+const Editor = ({ onOpenSupport }: EditorProps) => {
   const { recordKeystroke } = useCadence();
-  useVibeShift();
+  useCadenceAtmosphere();
   useAdaptiveWeight();
 
-  const currentVibe = useVibeStore((s) => s.currentVibe);
-  const vibeConfig = VIBE_CONFIG[currentVibe];
+  const currentCadence = useVibeStore((s) => s.currentCadence);
+  const atmosphereMode = useVibeStore((s) => s.atmosphereMode);
+  const manualCadence = useVibeStore((s) => s.manualCadence);
+  const activeCadence =
+    atmosphereMode === "manual" ? manualCadence : currentCadence;
+  const cadenceConfig = CADENCE_CONFIG[activeCadence];
+  const isBreathing = useEditorStore((s) => s.isBreathing);
   const ashActive = useTransientStore((s) => s.ashActive);
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
@@ -91,16 +103,16 @@ const Editor = () => {
     return () => el.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Update text color CSS variable when vibe changes
+  // Update text color when the active cadence palette changes.
   useEffect(() => {
-    document.documentElement.style.setProperty("--vessel-fg", vibeConfig.fg);
-  }, [vibeConfig.fg]);
+    document.documentElement.style.setProperty("--vessel-fg", cadenceConfig.fg);
+  }, [cadenceConfig.fg]);
 
   return (
     <motion.div
       className="vessel-atmosphere"
       animate={{
-        backgroundColor: vibeConfig.bg,
+        backgroundColor: cadenceConfig.bg,
       }}
       transition={{
         duration: TRANSITION_DURATION,
@@ -109,13 +121,14 @@ const Editor = () => {
     >
       <div
         ref={editorContainerRef}
-        className="vessel-canvas"
+        className={`vessel-canvas ${isBreathing ? "is-breathing" : ""}`}
         data-tauri-drag-region
       >
         <EditorContent editor={editor} />
         <ModeIndicator />
       </div>
       <ShortcutHint />
+      <AtmosphereControls onOpenSupport={onOpenSupport} />
       <TransientNotice />
       {ashActive && (
         <AshCanvas particles={ashParticles} onComplete={handleAshComplete} />

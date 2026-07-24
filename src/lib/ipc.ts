@@ -1,10 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { VibeState } from "../stores/vibeStore";
+import type { CadenceState } from "../stores/vibeStore";
 
 export interface SessionMeta {
   id: string;
   average_vibe: string;
-  dominant_state: VibeState;
+  dominant_state: CadenceState | "grounding" | "neutral" | "inspiration";
   duration_ms: number;
   word_count: number;
   created_at: string;
@@ -12,7 +12,7 @@ export interface SessionMeta {
 
 export interface SessionMetadataInput {
   average_vibe: string;
-  dominant_state: VibeState;
+  dominant_state: CadenceState;
   duration_ms: number;
   word_count: number;
 }

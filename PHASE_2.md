@@ -12,6 +12,15 @@ Authoritative context:
 - [VA National Center for PTSD: psychotherapy overview](https://www.ptsd.va.gov/professional/treat/txessentials/overview_therapy.asp)
 - [WHO: psychological interventions for adults with PTSD](https://www.who.int/teams/mental-health-and-substance-use/treatment-care/mental-health-gap-action-programme/evidence-centre/conditions-related-to-stress/posttraumatic-stress-disorder-%28ptsd%29--psychological-interventions---adults)
 
+### Implemented in the v0.3 foundation
+
+- Reflective-writing and grounding positioning with explicit EMDR-treatment boundaries
+- Focus-rhythm terminology and an on/off control
+- Observable cadence states: Still, Flow, and Surge
+- Auto and manually selected atmosphere palettes
+- Optional 5–4–3–2–1 grounding, gentle breathing, present-time orientation, and post-writing check-out
+- Initial frontend cadence tests and native cryptography/passphrase tests
+
 ## Product principles
 
 1. Preserve agency. Motion, prompts, saving, deletion, and transient behavior must be explicit and controllable.
@@ -38,11 +47,11 @@ Authoritative context:
 - Application-level error boundary with a safe recovery screen.
 - Local diagnostic log containing technical events only—never writing, passphrases, or decrypted session content.
 
-### P1 — User-controlled atmosphere
+### P1 — User-controlled atmosphere (implemented in v0.3 work)
 
 - Controls for breathing on/off, pace, intensity, and static canvas.
 - Respect `prefers-reduced-motion` by default and expose the same option in-app.
-- Rename emotional labels such as “Grounding” and “Inspiration” to neutral cadence descriptions unless the user explicitly chooses a mood.
+- Keep all adaptive labels tied to observable cadence, never inferred emotion.
 - Offer manual atmosphere selection; adaptive mode should remain optional.
 - Use transform/opacity animation rather than continuously animated padding.
 
@@ -64,7 +73,7 @@ Authoritative context:
 - Dynamic Type/zoom testing and layouts for smaller windows.
 - Avoid hover-only information.
 
-### P2 — Evidence-aware support tools
+### P2 — Evidence-aware support tools (initial set implemented in v0.3 work)
 
 These should be optional coping aids, not treatment claims:
 
